@@ -71,6 +71,33 @@
     }
   }
 
+  function firstDefined() {
+    for (let i = 0; i < arguments.length; i += 1) {
+      const candidate = arguments[i];
+      if (candidate !== undefined && candidate !== null && candidate !== "") return candidate;
+    }
+    return undefined;
+  }
+
+  // Colonnes utilisables quand le mappage du widget n'est pas renseigné.
+  function guessFields(record) {
+    const keys = Object.keys(record || {}).filter(
+      (key) => key !== "id" && !key.startsWith("gristHelper") && key !== "manualSort"
+    );
+    const byName = (pattern) => keys.find((key) => pattern.test(key));
+    const nameKey = byName(/indicateur|libell|^nom/i) || keys[0];
+    const valueKey =
+      byName(/valeur|value|pourcent|taux/i) ||
+      keys.find((key) => key !== nameKey && typeof record[key] === "number") ||
+      keys[1];
+    return {
+      name: record[nameKey],
+      value: record[valueKey],
+      titre_tdb: record[byName(/titre_?tdb/i)],
+      fix_largeur: record[byName(/fix_?largeur|largeur/i)],
+    };
+  }
+
   if (isGristWidget()) {
     window.grist.ready({
       requiredAccess: "read table",
@@ -82,12 +109,25 @@
       ],
     });
     window.grist.onRecords(function (records) {
-      const items = (records || []).map((row) => ({
-        name: row.Indicateur,
-        value: row.Valeur,
-        titre_tdb: row.titre_tdb,
-        fix_largeur: row.fix_largeur,
-      }));
+      const raw = records || [];
+      let mapped = null;
+      try {
+        if (typeof window.grist.mapColumnNames === "function") {
+          mapped = window.grist.mapColumnNames(raw);
+        }
+      } catch (error) {
+        mapped = null;
+      }
+      const items = raw.map(function (record, index) {
+        const m = (mapped && mapped[index]) || {};
+        const guessed = guessFields(record);
+        return {
+          name: firstDefined(m.Indicateur, guessed.name),
+          value: firstDefined(m.Valeur, guessed.value),
+          titre_tdb: firstDefined(m.titre_tdb, guessed.titre_tdb),
+          fix_largeur: firstDefined(m.fix_largeur, guessed.fix_largeur),
+        };
+      });
       setItems(items);
       if (!items.length) {
         emptyEl.hidden = false;
