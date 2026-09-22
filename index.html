@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000091" />
+    <title>Compteurs</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gouvfr/dsfr@1.14.1/dist/dsfr/dsfr.min.css" />
+    <link rel="stylesheet" href="css/compteurs.css" />
+  </head>
+  <body>
+    <main id="contenu" role="main">
+      <div class="fr-container fr-py-3w">
+        <h1 id="tdb-title" class="fr-h1" hidden></h1>
+        <div id="empty-state" class="fr-alert fr-alert--info">
+          <p class="fr-alert__title">Widget Grist</p>
+          <p>Ajoutez cette page comme vue personnalisée dans Grist, puis mappez le nom de l’indicateur et la valeur (0 à 100).</p>
+        </div>
+        <div id="gauges" class="gauges" aria-live="polite"></div>
+      </div>
+    </main>
+    <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
+    <script src="js/gauge.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

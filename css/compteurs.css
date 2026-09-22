@@ -1,0 +1,106 @@
+:root {
+  --compteur-red: #ce0500;
+  --compteur-mid: #fa7a35;
+  --compteur-green: #18753c;
+  --compteur-navy: #000091;
+  --compteur-ink: #161616;
+  --compteur-paper: #f5f5fe;
+}
+
+body {
+  margin: 0;
+  background: var(--compteur-paper);
+}
+
+#tdb-title {
+  margin-bottom: 1.5rem;
+}
+
+.gauges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.gauge-row {
+  box-sizing: border-box;
+  flex: 0 0 var(--box-width, 100%);
+  width: var(--box-width, 100%);
+  max-width: 100%;
+  background: #fff;
+  border: 1px solid #e3e3fd;
+  padding: 1.5rem 1.5rem 0.75rem;
+}
+
+.gauge-row__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  color: var(--compteur-ink);
+  text-align: center;
+}
+
+.gauge {
+  width: 100%;
+  margin: 0 auto;
+  display: block;
+}
+
+.gauge__track {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 18;
+  stroke-linecap: butt;
+}
+
+.gauge__arc {
+  fill: none;
+  stroke-width: 18;
+  stroke-linecap: butt;
+}
+
+.gauge__tick {
+  stroke: #3a3a3a;
+  stroke-width: 2;
+}
+
+.gauge__tick--major {
+  stroke-width: 3;
+}
+
+.gauge__label {
+  fill: #666;
+  font-size: 13px;
+  font-family: Marianne, arial, sans-serif;
+  text-anchor: middle;
+}
+
+.gauge__needle {
+  fill: var(--compteur-navy);
+}
+
+.gauge__hub {
+  fill: #fff;
+  stroke: var(--compteur-navy);
+  stroke-width: 4;
+}
+
+.gauge__caption {
+  fill: var(--compteur-navy);
+  font-size: 22px;
+  font-weight: 700;
+  font-family: Marianne, arial, sans-serif;
+  font-variant-numeric: tabular-nums;
+  text-anchor: middle;
+}
+
+@media (max-width: 575px) {
+  .gauge-row {
+    padding: 1rem 0.75rem 0.5rem;
+  }
+
+  .gauge-row__title {
+    font-size: 1.125rem;
+  }
+}
