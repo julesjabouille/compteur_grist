@@ -2,6 +2,9 @@
   const gaugesEl = document.getElementById("gauges");
   const emptyEl = document.getElementById("empty-state");
   const titleEl = document.getElementById("tdb-title");
+  const exportBarEl = document.getElementById("export-bar");
+  const exportBtn = document.getElementById("export-png");
+  const exportStatusEl = document.getElementById("export-status");
 
   function parseWidth(raw) {
     const s = String(raw ?? "").trim();
@@ -19,6 +22,15 @@
     gaugesEl.style.setProperty("--box-width", parseWidth(first.fix_largeur));
   }
 
+  function setExportVisible(visible) {
+    if (!exportBarEl) return;
+    exportBarEl.hidden = !visible;
+    if (!visible && exportStatusEl) {
+      exportStatusEl.hidden = true;
+      exportStatusEl.textContent = "";
+    }
+  }
+
   function setItems(items) {
     const rows = (items || [])
       .map((item) => ({
@@ -31,6 +43,41 @@
     emptyEl.hidden = rows.length > 0;
     setLayout(rows);
     window.CompteurGauge.render(gaugesEl, rows);
+    setExportVisible(rows.length > 0);
+  }
+
+  if (exportBtn) {
+    exportBtn.addEventListener("click", function () {
+      if (!window.CompteurExport) return;
+      exportBtn.disabled = true;
+      if (exportStatusEl) {
+        exportStatusEl.hidden = false;
+        exportStatusEl.textContent = "Préparation de l’export…";
+      }
+      window.CompteurExport.exportAll(gaugesEl, {
+        onProgress: function (current, total, title) {
+          if (exportStatusEl) {
+            exportStatusEl.textContent =
+              "Export " + current + "/" + total + " — " + title;
+          }
+        },
+      })
+        .then(function (count) {
+          if (exportStatusEl) {
+            exportStatusEl.textContent =
+              count + " PNG emballé" + (count > 1 ? "s" : "") + " dans le ZIP.";
+          }
+        })
+        .catch(function (error) {
+          if (exportStatusEl) {
+            exportStatusEl.textContent =
+              "Échec de l’export : " + (error && error.message ? error.message : error);
+          }
+        })
+        .finally(function () {
+          exportBtn.disabled = false;
+        });
+    });
   }
 
   function splitCsvLine(line, sep) {
@@ -74,6 +121,7 @@
   function showNotice(title, text) {
     emptyEl.hidden = false;
     titleEl.hidden = true;
+    setExportVisible(false);
     emptyEl.querySelector(".fr-alert__title").textContent = title;
     emptyEl.querySelector("p:not(.fr-alert__title)").textContent = text;
   }
