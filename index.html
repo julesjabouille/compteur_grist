@@ -17,10 +17,16 @@
           <p>Ajoutez cette page comme vue personnalisée dans Grist, puis mappez le nom de l’indicateur et la valeur (0 à 100).</p>
         </div>
         <div id="gauges" class="gauges" aria-live="polite"></div>
+        <div id="export-bar" class="export-bar" hidden>
+          <button type="button" id="export-png" class="fr-btn">Export PNG</button>
+          <p id="export-status" class="export-bar__status fr-text--sm" hidden></p>
+        </div>
       </div>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
     <script src="https://docs.getgrist.com/grist-plugin-api.js"></script>
     <script src="js/gauge.js"></script>
+    <script src="js/export.js"></script>
     <script src="js/app.js"></script>
   </body>
 </html>
