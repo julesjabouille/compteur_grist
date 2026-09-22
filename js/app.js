@@ -71,6 +71,13 @@
     }
   }
 
+  function showNotice(title, text) {
+    emptyEl.hidden = false;
+    titleEl.hidden = true;
+    emptyEl.querySelector(".fr-alert__title").textContent = title;
+    emptyEl.querySelector("p:not(.fr-alert__title)").textContent = text;
+  }
+
   function firstDefined() {
     for (let i = 0; i < arguments.length; i += 1) {
       const candidate = arguments[i];
@@ -102,10 +109,10 @@
     window.grist.ready({
       requiredAccess: "read table",
       columns: [
-        { name: "Indicateur", title: "Nom de l’indicateur" },
-        { name: "Valeur", title: "Valeur (0-100)", type: "Numeric" },
-        { name: "titre_tdb", title: "titre_tdb (1re ligne)", optional: true },
-        { name: "fix_largeur", title: "fix_largeur (1re ligne)", optional: true },
+        { name: "Indicateur", title: "Nom de l’indicateur", type: "Text,Choice,Any" },
+        { name: "Valeur", title: "Valeur (0-100)", type: "Numeric,Int,Any" },
+        { name: "titre_tdb", title: "titre_tdb (1re ligne)", type: "Text,Any", optional: true },
+        { name: "fix_largeur", title: "fix_largeur (1re ligne)", type: "Text,Numeric,Int,Any", optional: true },
       ],
     });
     window.grist.onRecords(function (records) {
@@ -130,11 +137,16 @@
       });
       setItems(items);
       if (!items.length) {
-        emptyEl.hidden = false;
-        titleEl.hidden = true;
-        emptyEl.querySelector(".fr-alert__title").textContent = "Aucun indicateur";
-        emptyEl.querySelector("p").textContent =
-          "La table doit contenir au moins une ligne : nom de l’indicateur et valeur de 0 à 100.";
+        showNotice(
+          "Aucun indicateur",
+          "La table doit contenir au moins une ligne : nom de l’indicateur et valeur de 0 à 100."
+        );
+      } else if (items.every((item) => firstDefined(item.name) === undefined)) {
+        const columns = Object.keys(raw[0] || {}).join(", ") || "aucune";
+        showNotice(
+          "Colonne « nom » introuvable",
+          `Mappez la colonne dans le panneau de droite (Column Mapping). Colonnes reçues : ${columns}.`
+        );
       }
     });
     return;
